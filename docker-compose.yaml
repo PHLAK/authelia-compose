@@ -1,0 +1,84 @@
+services:
+
+  authelia:
+    image: ghcr.io/authelia/authelia:${AUTHELIA_VERSION:-latest}
+    depends_on: [database, cache]
+    env_file: environment.d/authelia.env
+    environment:
+      # AUTHELIA_SERVER_ADDRESS: tcp://9091
+      AUTHELIA_STORAGE_POSTGRES_ADDRESS: ${DATABASE_HOST:-database}:${DATABASE_PORT:-5432}
+      AUTHELIA_STORAGE_POSTGRES_USERNAME: ${DATABASE_USER:-authelia}
+      AUTHELIA_STORAGE_POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      AUTHELIA_STORAGE_POSTGRES_DATABASE: ${DATABASE_DB:-authelia}
+      AUTHELIA_SESSION_REDIS_HOST: cache
+      AUTHELIA_SESSION_REDIS_PORT: 6379
+      PUID: ${HOST_UID:-0}
+      PGID: ${HOST_GID:-0}
+    ports:
+      - ${AUTHELIA_PORT:-9091}:9091
+    volumes:
+      - ${AUTHELIA_SECRETS_VOLUME:-./volumes/config}:/config
+      - ${AUTHELIA_SECRETS_VOLUME:-./volumes/secrets}:/secrets
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      com.centurylinklabs.watchtower.scope: ${COMPOSE_PROJECT_NAME}
+    restart: unless-stopped
+
+  database:
+    image: postgres:${POSTGRES_VERSION:-17}
+    env_file: environment.d/database.env
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-authelia}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_DB:-authelia}
+    volumes:
+      - ${POSTGRES_VOLUME:-postgres-data}:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+    healthcheck:
+      test: pg_isready -d ${DATABASE_NAME:-authelia} -U ${DATABASE_USER:-authelia}
+    labels:
+      com.centurylinklabs.watchtower.scope: ${COMPOSE_PROJECT_NAME}
+    restart: unless-stopped
+  
+  cache:
+    image: valkey/valkey:${VALKEY_VERSION:-8}
+    volumes:
+      - ${VALKEY_VOLUME:-valkey-data}:/data
+      - /etc/localtime:/etc/localtime:ro
+    healthcheck:
+      test: redis-cli ping || exit 1
+    labels:
+      com.centurylinklabs.watchtower.scope: ${COMPOSE_PROJECT_NAME}
+    restart: unless-stopped
+  
+  database-backups:
+    image: prodrigestivill/postgres-backup-local:${POSTGRES_BACKUP_VERSION:-latest}
+    env_file: environment.d/database-backups.env
+    environment:
+      POSTGRES_HOST: ${DATABASE_HOST:-database}
+      POSTGRES_DB: ${DATABASE_NAME:-authelia}
+      POSTGRES_USER: ${DATABASE_USER:-authelia}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_EXTRA_OPTS: '--clean --if-exists'
+      BACKUP_DIR: /backups
+    volumes:
+      - ${DATABASE_BACKUPS_PATH:-./volumes/backups}:/backups
+      - /etc/localtime:/etc/localtime:ro
+    depends_on: [database]
+    restart: unless-stopped
+
+  watchtower:
+    image: containrrr/watchtower:${WATCHTOWER_VERSION:-latest}
+    env_file: environment.d/watchtower.env
+    environment:
+      WATCHTOWER_SCOPE: ${COMPOSE_PROJECT_NAME}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      com.centurylinklabs.watchtower.scope: ${COMPOSE_PROJECT_NAME}
+    restart: unless-stopped
+
+volumes:
+  postgres-data: {}
+  valkey-data: {}
