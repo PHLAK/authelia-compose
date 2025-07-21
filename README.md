@@ -12,17 +12,13 @@ Installation
 
          git clone git@github.com:PHLAK/authelia-compose.git
 
-  2. Initialize the configuration files
+  2. Initialize the configuration and secrets files
 
           make init
 
-     or manually run the commands in `Makefile`
+  4. Set environment variables in `.env` and secret values in the `volumes/secrets/*` files
 
-  3. Set the environment variables in `.env`
-
-  4. Set service-specific environment variables by editing the files found in the `environment.d` directory (optional)
-
-  5. Add your Authelia config to `volumes/config/configuration.yaml`
+  5. Set service-specific environment variables by editing the files found in the `environment.d` directory (optional)
 
   6. Run `docker compose config` to validate and confirm your configuration
 
@@ -37,7 +33,7 @@ Updating
 
   2. If necessary, initialize new configuration files
 
-         make init
+         make config
 
   3. Pull new images and restart containers
 
