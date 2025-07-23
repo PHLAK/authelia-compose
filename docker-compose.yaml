@@ -12,8 +12,8 @@ services:
       AUTHELIA_STORAGE_POSTGRES_DATABASE: ${DATABASE_DB:-authelia}
       AUTHELIA_SESSION_REDIS_HOST: cache
       AUTHELIA_SESSION_REDIS_PORT: 6379
-      PUID: ${HOST_UID:-0}
-      PGID: ${HOST_GID:-0}
+      PUID: ${HOST_UID}
+      PGID: ${HOST_GID}
     ports:
       - ${AUTHELIA_PORT:-9091}:9091
     volumes:
