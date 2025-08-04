@@ -16,13 +16,13 @@ Installation
 
           make init
 
-  4. Set environment variables in `.env` and secret values in the `volumes/secrets/*` files
+  3. Set environment variables in `.env` and secret values in the `volumes/secrets/*` files
 
-  5. Set service-specific environment variables by editing the files found in the `environment.d` directory (optional)
+  4. Set service-specific environment variables by editing the files found in the `environment.d` directory (optional)
 
-  6. Run `docker compose config` to validate and confirm your configuration
+  5. Run `docker compose config` to validate and confirm your configuration
 
-  7. Run `docker compose up -d` to start the containers
+  6. Run `docker compose up -d` to start the containers
 
 Updating
 --------
