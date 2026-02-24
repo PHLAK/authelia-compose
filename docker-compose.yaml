@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
   
   cache:
-    image: valkey/valkey:${VALKEY_VERSION:-8}
+    image: valkey/valkey:${VALKEY_VERSION:-9}
     volumes:
       - ${VALKEY_VOLUME:-valkey-data}:/data
       - /etc/localtime:/etc/localtime:ro
