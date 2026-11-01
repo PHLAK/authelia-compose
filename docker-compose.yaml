@@ -39,7 +39,7 @@ services:
     labels:
       com.centurylinklabs.watchtower.scope: ${COMPOSE_PROJECT_NAME}
     restart: unless-stopped
-  
+
   cache:
     image: valkey/valkey:${VALKEY_VERSION:-9}
     volumes:
@@ -50,7 +50,7 @@ services:
     labels:
       com.centurylinklabs.watchtower.scope: ${COMPOSE_PROJECT_NAME}
     restart: unless-stopped
-  
+
   database-backups:
     image: prodrigestivill/postgres-backup-local:${POSTGRES_BACKUP_VERSION:-latest}
     env_file: environment.d/database-backups.env
@@ -68,7 +68,7 @@ services:
     restart: unless-stopped
 
   watchtower:
-    image: containrrr/watchtower:${WATCHTOWER_VERSION:-latest}
+    image: nickfedor/watchtower:${WATCHTOWER_VERSION:-latest}
     env_file: environment.d/watchtower.env
     environment:
       WATCHTOWER_SCOPE: ${COMPOSE_PROJECT_NAME}

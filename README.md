@@ -10,11 +10,11 @@ Installation
 
   1. Clone the repository
 
-         git clone git@github.com:PHLAK/authelia-compose.git
+          git clone https://github.com/PHLAK/authelia-compose.git
 
-  2. Initialize the configuration and secrets files
+  2. Initialize the configuration files
 
-          make init
+           make init
 
   3. Set environment variables in `.env` and secret values in the `volumes/secrets/*` files
 
@@ -33,8 +33,9 @@ Updating
 
   2. If necessary, initialize new configuration files
 
-         make config
+         make init
 
   3. Pull new images and restart containers
 
-         docker compose up -d --pull allways
+         docker compose pull
+         docker compose up -d
